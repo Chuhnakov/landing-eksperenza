@@ -1,6 +1,8 @@
-# Next.js на Netlify — publish задаёт @netlify/plugin-nextjs автоматически
+# Next.js на Netlify
+# publish = ".next" переопределяет настройку UI (нельзя оставлять корень репозитория)
 [build]
   command = "npm run build"
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
