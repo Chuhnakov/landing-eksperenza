@@ -1,0 +1,100 @@
+═══════════════════════════════════════════════════════════════
+  БЫСТРЫЙ ДЕПЛОЙ НА VDS (без домена, доступ по IP)
+  Папка на сервере: /var/www/esperanza
+═══════════════════════════════════════════════════════════════
+
+─── ЧАСТЬ 1: НА ВАШЕМ ПК ─────────────────────────────────────
+
+1. Сборка:
+   npm install
+   npm run build:server
+
+   Готова папка: release/
+
+
+2. Загрузка на VDS (замените IP и user):
+   scp -r release/* root@123.45.67.89:/var/www/esperanza/
+
+   Или через FileZilla / WinSCP:
+   → подключиться по SFTP
+   → создать /var/www/esperanza
+   → залить содержимое release/ (server.js, public/, .next/, deploy/)
+
+
+─── ЧАСТЬ 2: НА VDS (Ubuntu/Debian) ──────────────────────────
+
+3. Подключиться по SSH:
+   ssh root@123.45.67.89
+
+
+4. Установить Node.js 20 (один раз):
+   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+   apt install -y nodejs nginx
+   node -v    # должно быть v20.x
+
+
+5. Создать папку (если ещё нет):
+   mkdir -p /var/www/esperanza
+   cd /var/www/esperanza
+
+
+6. Настроить .env (замените IP):
+   cp .env.example .env
+   nano .env
+
+   Содержимое:
+   NEXT_PUBLIC_SITE_URL=http://123.45.67.89
+   PORT=3000
+   HOSTNAME=127.0.0.1
+   DEPLOY_PATH=/var/www/esperanza
+
+   Ctrl+O → Enter → Ctrl+X
+
+
+7. Запустить сайт:
+   bash deploy/install-server.sh
+
+   Проверка локально на сервере:
+   curl http://127.0.0.1:3000
+
+
+8. Nginx — открыть сайт по IP (порт 80):
+   cp deploy/nginx-ip.conf /etc/nginx/sites-available/esperanza
+   ln -sf /etc/nginx/sites-available/esperanza /etc/nginx/sites-enabled/
+   rm -f /etc/nginx/sites-enabled/default
+   nginx -t && systemctl reload nginx
+
+
+9. Firewall (если включён ufw):
+   ufw allow 22/tcp
+   ufw allow 80/tcp
+   ufw enable
+
+
+10. Открыть в браузере:
+    http://123.45.67.89
+
+
+─── ОБНОВЛЕНИЕ САЙТА ─────────────────────────────────────────
+
+На ПК:  npm run build:server
+На VDS: scp -r release/* root@IP:/var/www/esperanza/
+        ssh root@IP "cd /var/www/esperanza && pm2 restart esperanza"
+
+
+─── ПОЛЕЗНЫЕ КОМАНДЫ ──────────────────────────────────────────
+
+pm2 status              — статус
+pm2 logs esperanza      — логи
+pm2 restart esperanza   — перезапуск
+systemctl status nginx  — nginx
+
+
+─── КОГДА ПОЯВИТСЯ ДОМЕН ──────────────────────────────────────
+
+1. В .env: NEXT_PUBLIC_SITE_URL=https://esperanza.ru
+2. Заменить nginx-ip.conf на deploy/nginx.conf.example
+3. certbot --nginx -d esperanza.ru
+4. pm2 restart esperanza
+
+═══════════════════════════════════════════════════════════════

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Nunito_Sans } from "next/font/google";
+import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -15,9 +16,9 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Эсперанза — студия красоты",
-  description:
-    "Премиальная студия красоты Эсперанза: маникюр, уход за кожей, стрижки и брови. Запишитесь онлайн.",
+  metadataBase: new URL(siteConfig.url),
+  title: siteConfig.title,
+  description: siteConfig.description,
 };
 
 export default function RootLayout({

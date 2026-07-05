@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /** Минимальная сборка для VPS: npm run build:server → папка release/ */
+  output: "standalone",
 };
 
 export default nextConfig;

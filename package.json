@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
+    "build:server": "next build && node scripts/pack-standalone.mjs",
     "start": "next start --hostname 0.0.0.0",
+    "start:prod": "cross-env NODE_ENV=production node release/server.js",
     "lint": "eslint"
   },
   "dependencies": {
@@ -27,6 +29,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "shadcn": "^4.13.0",
