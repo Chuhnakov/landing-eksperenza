@@ -1,0 +1,41 @@
+# Nginx — прокси на Node.js (Next.js standalone)
+#
+# 1. Скопируйте в /etc/nginx/sites-available/esperanza
+# 2. Замените example.com на ваш домен
+# 3. ln -s /etc/nginx/sites-available/esperanza /etc/nginx/sites-enabled/
+# 4. nginx -t && systemctl reload nginx
+#
+# SSL (Let's Encrypt):
+#   certbot --nginx -d example.com -d www.example.com
+
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    # Логи (опционально)
+    access_log /var/log/nginx/esperanza.access.log;
+    error_log  /var/log/nginx/esperanza.error.log;
+
+    # Статика Next.js — кеширование
+    location /_next/static/ {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_cache_valid 200 365d;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location /images/ {
+        proxy_pass http://127.0.0.1:3000;
+        add_header Cache-Control "public, max-age=86400";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
