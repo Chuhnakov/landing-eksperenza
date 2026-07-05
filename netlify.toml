@@ -1,0 +1,9 @@
+# Next.js на Netlify — publish задаёт @netlify/plugin-nextjs автоматически
+[build]
+  command = "npm run build"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
