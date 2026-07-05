@@ -46,15 +46,16 @@ if (fs.existsSync(envExample)) {
   fs.copyFileSync(envExample, path.join(releaseDir, ".env.example"));
 }
 
-const deployFiles = ["deploy/ecosystem.config.cjs", "deploy/nginx.conf.example", "deploy/nginx-ip.conf", "deploy/VDS-QUICKSTART.txt"];
-for (const file of deployFiles) {
-  const src = path.join(root, file);
-  if (fs.existsSync(src)) {
-    const destDir = path.join(releaseDir, "deploy");
-    fs.mkdirSync(destDir, { recursive: true });
-    fs.copyFileSync(src, path.join(destDir, path.basename(file)));
-  }
+const deploySrc = path.join(root, "deploy");
+const deployDest = path.join(releaseDir, "deploy");
+if (fs.existsSync(deploySrc)) {
+  copyDir(deploySrc, deployDest);
 }
+
+fs.copyFileSync(
+  path.join(root, "deploy", "RELEASE-README.txt"),
+  path.join(releaseDir, "README.txt")
+);
 
 console.log("");
 console.log("✅ Готово: папка release/");
